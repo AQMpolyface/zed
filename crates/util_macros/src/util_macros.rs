@@ -48,7 +48,13 @@ pub fn uri(input: TokenStream) -> TokenStream {
     let uri = uri.value();
 
     #[cfg(target_os = "windows")]
-    let uri = uri.replace("file:///", "file:///C:/");
+    let uri = {
+        if uri.starts_with("file:///") && !uri_value[8..].starts_with("C:") {
+            uri.replace("file:///", "file:///C:/")
+        } else {
+            uri
+        }
+    };
 
     TokenStream::from(quote! {
         #uri
